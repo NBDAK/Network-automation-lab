@@ -1,0 +1,13 @@
+- name: Configure Loopback via J2 Template
+  hosts: routers
+  gather_facts: no
+  tasks:
+    - name: Generate config from template
+      template:
+        src: ../templates/loopback.j2
+        dest: "/tmp/{{ inventory_hostname }}_loopback_config.txt"
+      delegate_to: localhost
+
+    - name: Push config from rendered file
+      ios_config:
+        src: "/tmp/{{ inventory_hostname }}_loopback_config.txt"

@@ -1,0 +1,14 @@
+- name: Backup running config
+  hosts: routers
+  gather_facts: no
+  tasks:
+    - name: Get running-config
+      ios_command:
+        commands: show running-config
+      register: backup_output
+
+    - name: Save to local file
+      copy:
+        content: "{{ backup_output.stdout[0] }}"
+        dest: "/root/network-lab/backups/{{ inventory_hostname }}_backup.txt"
+      delegate_to: localhost
