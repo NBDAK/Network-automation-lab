@@ -1,0 +1,21 @@
+name: Network Automation Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Backup running config
+        run: ansible-playbook -i inventory/hosts.yml playbooks/backup.yml --vault-password-file .vault_pass
+
+      - name: Deploy Loopback config
+        run: ansible-playbook -i inventory/hosts.yml playbooks/loopback_j2.yml --vault-password-file .vault_pass
+
+      - name: Validate config
+        run: python3 tests/validate.py
